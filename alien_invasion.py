@@ -4,6 +4,7 @@ import pygame
 from pygame.sprite import Group
 from settings import Settings
 from game_stats import GameStats
+from button import Button
 from ship import Ship
 from alien import Alien
 import game_functions as gf
@@ -17,6 +18,8 @@ def run_game():
         (ai_settings.screen_width, ai_settings.screen_height)
     )
     pygame.display.set_caption("Alien Invasion")
+    # Создание кнопки Play
+    play_button = Button(ai_settings, screen, "Play")
     # Создание экземпляра для хранения игровой статистики
     stats = GameStats(ai_settings)
 
@@ -31,7 +34,7 @@ def run_game():
     # Запуск основного цикла игры
     while True:
         # Отслеживание событий клавиатуры и мыши
-        gf.check_events(ai_settings, screen, ship, bullets)
+        gf.check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
         if stats.game_active:
             ship.update()
             gf.update_bullets(ai_settings, screen, ship, aliens, bullets)
@@ -39,7 +42,7 @@ def run_game():
 
         # При каждом проходе цикла перерисовывается экран.
         # Отображение последнего прорисованного экрана
-        gf.update_screen(ai_settings, screen, ship, aliens, bullets)
+        gf.update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button)
 
 
 run_game()
