@@ -62,6 +62,11 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bul
     """Запускает новую игру при нажатии на кнопку Play."""
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_clicked and not stats.game_active:
+        # Сброс игровых настроек
+        ai_settings.initialize_dynamic_settings()
+        # Указатель мыши скрывается
+        pygame.mouse.set_visible(False)
+
         start_game(ai_settings, screen, stats, ship, aliens, bullets)
 
 
@@ -75,6 +80,7 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
     ship.blitme()
     aliens.draw(screen)
 
+    # Кнопка Play отображается в том случае, если игра неактивна.
     if not stats.game_active:
         play_button.draw_button()
 
@@ -101,6 +107,7 @@ def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
     if len(aliens) == 0:
         # Уничтожение существующих пуль и создание нового флота.
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings, screen, ship, aliens)
 
 
@@ -166,7 +173,7 @@ def change_fleet_direction(ai_settings, aliens):
     ai_settings.fleet_direction *= -1
 
 
-def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
+def ship_hit(ai_settings, screen, stats, ship, aliens, bullets):
     """Обрабатываем столкновения корабля с пришельцем."""
     if stats.ship_left > 0:
         # Уменьшение ship_left
@@ -193,7 +200,7 @@ def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
             # Происходит тоже что при столкновении с кораблем.
-            ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+            ship_hit(ai_settings, screen, stats, ship, aliens, bullets)
             break
 
 
@@ -208,7 +215,7 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     # Проверка коллизий "пришелец-корабль"
     if pygame.sprite.spritecollideany(ship, aliens):
         # print("Ship hit!!!")
-        ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+        ship_hit(ai_settings, screen, stats, ship, aliens, bullets)
 
     # Проверка пришельцев, добравшихся до края экрана.
     check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
